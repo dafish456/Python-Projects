@@ -30,7 +30,6 @@ class Rocket:
     
     def __init__(self, thrust):
         self.thrust = thrust #initial thrust in Newtons
-        
         #calculate individual rocket flight time using init values
         self.ft = 4.056
 
