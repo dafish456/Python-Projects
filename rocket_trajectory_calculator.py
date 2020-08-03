@@ -25,16 +25,16 @@ __status__ = ""
 '''get the flight time, set up intervals for x-axis (if uses time) and make a'''
 class Rocket:
     
-    def __init__(self, name, total_mass, prop_mass, max_thrust, time_maxThrust, burn_time):
+    def __init__(self, name, total_mass, prop_mass, max_thrust, time_maxThrust, burn_time, height):
         self.name = name
         self.total_mass = total_mass
         self.prop_mass = prop_mass
         self.max_thrust = max_thrust/1.0 #thrust in Newtons
         self.time_maxThrust = time_maxThrust
         self.burn_time = burn_time
-        
+        self.height = height
         #calculate individual rocket flight time using init values
-        self.ft = 5 #ft must be > burn_time duh
+        self.ft = 10 #ft must be > burn_time duh
         
         #structural mass
         self.str_mass = self.total_mass - self.prop_mass
@@ -62,32 +62,36 @@ class Rocket:
                 current_total_mass = self.str_mass + current_prop_mass
         return current_total_mass
 
-    def integrate(self, arrToIntegrate):
+    def integrate(self, arrToIntegrate, respectTo, initVal):
         integratedArr = []
-        time_vals = self.time_axis()#####################
-        #CONTINUE HERE BRUH -------------------------------------------
-        i = 0
-        while time_vals[i] < self.ft:
-            pass
+        if respectTo == 'time':
+            t = 0
+            arr_pos = 0
+            dt = 0.01
+            while t < self.ft:
+                if t !=0:
+                    integratedArr.append(integratedArr[arr_pos - 1] + arrToIntegrate[arr_pos - 1]*dt)
+                else:
+                    integratedArr.append(initVal)
+                print('@ t=', t, ', F(x) = ', integratedArr[arr_pos])
+                arr_pos+=1
+                t+=dt
         return integratedArr
     
-    def position(self, yi, vi, ai):
-        #get 
-        return yi
+    def position(self):
+        return self.integrate(self.velocity(), 'time', self.height)
 
-    def velocity(self, vi):
-        #acc_values = self.acceleration()
-        #use integrate function above to integrate acc to get vel
-        pass
-    
+    def velocity(self):
+        return self.integrate(self.acceleration(), 'time', 0)
+            
     def acceleration(self):
         acc_arr = []
         t = 0
         dt = 0.01
         while t <= self.ft:
-            val = self.get_thrust(t)/self.get_mass(t)
+            val = (self.get_thrust(t) - 9.81*self.get_mass(t))/self.get_mass(t)
             acc_arr.append(val)
-            print('self.get_thrust(', t, ') / self.get_mass(t) = ', val)
+            print('@t = ,', t, ', a = ', val)
             t+=dt
         return acc_arr
             
@@ -98,21 +102,27 @@ class Rocket:
             current_thrust = 0
         elif time < self.burn_time and time > 0:
             if time < self.time_maxThrust:
-                current_thrust = self.max_thrust*math.exp(-(time - self.time_maxThrust)*(time - self.time_maxThrust))     
+                current_thrust = self.max_thrust*math.exp(-(time - self.time_maxThrust)*(time - self.time_maxThrust))   
             elif time < 0.5:
                 current_thrust = (-2*(time-self.time_maxThrust)*(time-self.time_maxThrust) + 1)*self.max_thrust
             elif time < self.burn_time:
                 current_thrust = 0.392*self.max_thrust/time
         else:
-            current_thrust = 0.1*self.max_thrust
+            current_thrust = 0
         return current_thrust
         
     #def plot(y_axis, x_axis):
 
 def main():
-    r1 = Rocket('bruhRocket', 50, 10, 800, .17, 3.5)
-    r1.acceleration()
-    r1.velocity(0)
+    r1 = Rocket('bruhRocket', 25.27, 2.394, 1713.3, .17, 4.5, 0)
+    t = 0
+    dt = .01
+    '''while t<10:
+        print('@ t = ', t, ',Thrust =' ,r1.get_thrust(t))
+        t+=dt'''
+    r1.acceleration()#not sure if acc curve is quite right
+    #r1.velocity()
+    #r1.position()
     print('------------------------------------------------------------------------------------------------------------------------------------------------------------')
     '''print('Enter your Rocket\'s name:')
     rocket_name = input()
