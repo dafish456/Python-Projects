@@ -34,7 +34,9 @@ class Rocket:
         self.burn_time = burn_time
         self.height = height
         #calculate individual rocket flight time using init values
-        self.ft = 10 #ft must be > burn_time duh
+
+        self.ft = burn_time*5 #ft must be > burn_time duh
+
         
         #structural mass
         self.str_mass = self.total_mass - self.prop_mass
@@ -70,10 +72,10 @@ class Rocket:
             dt = 0.01
             while t < self.ft:
                 if t !=0:
-                    integratedArr.append(integratedArr[arr_pos - 1] + arrToIntegrate[arr_pos - 1]*dt)
+                    integratedArr.append(integratedArr[arr_pos - 1] + (arrToIntegrate[arr_pos]+arrToIntegrate[arr_pos - 1])*dt/2)
                 else:
                     integratedArr.append(initVal)
-                print('@ t=', t, ', F(x) = ', integratedArr[arr_pos])
+                #print('@ t=', t, ', F(x) = ', integratedArr[arr_pos])
                 arr_pos+=1
                 t+=dt
         return integratedArr
@@ -91,7 +93,7 @@ class Rocket:
         while t <= self.ft:
             val = (self.get_thrust(t) - 9.81*self.get_mass(t))/self.get_mass(t)
             acc_arr.append(val)
-            print('@t = ,', t, ', a = ', val)
+            #print('@t = ,', t, ', a = ', val)
             t+=dt
         return acc_arr
             
@@ -110,36 +112,48 @@ class Rocket:
         else:
             current_thrust = 0
         return current_thrust
+
+    def shorten_arr(self, arr, indexCutoff):
+        del arr[indexCutoff:]
+        return arr
         
     #def plot(y_axis, x_axis):
 
 def main():
-    r1 = Rocket('bruhRocket', 25.27, 2.394, 1713.3, .17, 4.5, 0)
-    t = 0
-    dt = .01
-    '''while t<10:
-        print('@ t = ', t, ',Thrust =' ,r1.get_thrust(t))
-        t+=dt'''
-    r1.acceleration()#not sure if acc curve is quite right
-    #r1.velocity()
-    #r1.position()
-    print('------------------------------------------------------------------------------------------------------------------------------------------------------------')
-    '''print('Enter your Rocket\'s name:')
+    print('Enter your Rocket\'s name:')
     rocket_name = input()
     print('Enter ', rocket_name,'\'s total mass:')
-    total_mass = input()
+    total_mass = float(input())
     print('Enter ', rocket_name,'\'s propellant mass:')
-    prop_mass = input()
+    prop_mass = float(input())
     print('Enter ', rocket_name,'\'s max thrust:')
-    max_thrust = input()
+    max_thrust = float(input())
+    print('Enter ', rocket_name,'\'s time at max thrust:')
+    t_maxThrust = float(input())
     print('Enter ', rocket_name,'\'s burn duration:')
-    burn_time = input()
-    generate rocket object using inputs
-    generate plots through Matplotlib using rocket object
-    '''
-    
-    #time_axis(rocket_object.ft) #name 'time_axis' is not defined error
-    #Rocket.time_axis(r1)
-
+    burn_time = float(input())
+    print('Enter ', rocket_name,'\'s height:')
+    h = float(input())
+    r1 = Rocket(rocket_name, total_mass, prop_mass, max_thrust, t_maxThrust, burn_time, h)
+    t = 0
+    dt = .01
+    acc = r1.acceleration()
+    vel = r1.velocity()
+    pos = r1.position()
+    a=0
+    while pos[a] > 0:
+        a+=1
+        t+=dt
+    r1.ft = t
+    new_acc = r1.shorten_arr(acc, a+1)
+    new_vel = r1.shorten_arr(vel, a+1)
+    new_pos = r1.shorten_arr(pos, a+1)
+    b = 0
+    t=0
+    while t < r1.ft:
+        print('@t = ', t,' x = ', new_pos[b], ' v = ', new_vel[b],' a = ', new_acc[b])
+        b+=1
+        t+=dt
+    print('------------------------------------------------------------------------------------------------------------------------------------------------------------')  
 if __name__ == "__main__":
     main()
