@@ -4,8 +4,7 @@ import os    # standard library
 import sys
 
 #import requests  # 3rd party packages
-'''import matplotlib.pylot as plt
-import numpy as np'''
+import matplotlib.pyplot as plt
 
 #import mypackage.mymodule  # local source
 #import mypackage.myothermodule
@@ -36,7 +35,6 @@ class Rocket:
         #calculate individual rocket flight time using init values
 
         self.ft = burn_time*5 #ft must be > burn_time duh
-
         
         #structural mass
         self.str_mass = self.total_mass - self.prop_mass
@@ -47,7 +45,6 @@ class Rocket:
         time_arr = []
         while t <= self.ft:
             time_arr.append(t)
-            print(t)
             t+=dt
         return time_arr
 
@@ -96,7 +93,7 @@ class Rocket:
             #print('@t = ,', t, ', a = ', val)
             t+=dt
         return acc_arr
-            
+    
     def get_thrust(self, time):
         #insert better thrust profile here
         current_thrust = 0
@@ -117,8 +114,8 @@ class Rocket:
         del arr[indexCutoff:]
         return arr
         
-    #def plot(y_axis, x_axis):
-
+    def plot(y_axis, x_axis):
+        pass
 def main():
     print('Enter your Rocket\'s name:')
     rocket_name = input()
@@ -135,6 +132,7 @@ def main():
     print('Enter ', rocket_name,'\'s height:')
     h = float(input())
     r1 = Rocket(rocket_name, total_mass, prop_mass, max_thrust, t_maxThrust, burn_time, h)
+    
     t = 0
     dt = .01
     acc = r1.acceleration()
@@ -148,12 +146,22 @@ def main():
     new_acc = r1.shorten_arr(acc, a+1)
     new_vel = r1.shorten_arr(vel, a+1)
     new_pos = r1.shorten_arr(pos, a+1)
-    b = 0
-    t=0
-    while t < r1.ft:
-        print('@t = ', t,' x = ', new_pos[b], ' v = ', new_vel[b],' a = ', new_acc[b])
-        b+=1
-        t+=dt
-    print('------------------------------------------------------------------------------------------------------------------------------------------------------------')  
+
+    plt.figure(0)
+    plt.ylabel('Altitude')
+    plt.xlabel('Time')
+    plt.plot(r1.time_axis(), new_pos)
+
+    plt.figure(1)
+    plt.ylabel('Velocity')
+    plt.xlabel('Time')
+    plt.plot(r1.time_axis(), new_vel)
+
+    plt.figure(2)
+    plt.ylabel('Acceleration')
+    plt.xlabel('Time')
+    plt.plot(r1.time_axis(), new_acc)
+    plt.show()
 if __name__ == "__main__":
     main()
+    
