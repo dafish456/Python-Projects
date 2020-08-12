@@ -113,9 +113,7 @@ class Rocket:
     def shorten_arr(self, arr, indexCutoff):
         del arr[indexCutoff:]
         return arr
-        
-    def plot(y_axis, x_axis):
-        pass
+
 def main():
     print('Enter your Rocket\'s name:')
     rocket_name = input()
